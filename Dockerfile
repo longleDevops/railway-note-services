@@ -3,7 +3,7 @@ FROM eclipse-temurin:11-jre-alpine
 
 WORKDIR /app
 
-# Install procps for debugging if needed
+# Install procps/bash for debugging if needed
 RUN apk add --no-cache procps curl unzip bash
 
 # Copy fat jar
@@ -15,6 +15,7 @@ ENV JVM_XMX=200m
 ENV RESERVED_CODE_CACHE=150m
 ENV STACK_SIZE=512k
 
+# Compose JAVA_OPTS
 ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
  -XX:ReservedCodeCacheSize=${RESERVED_CODE_CACHE} \
  -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=50"
@@ -22,5 +23,6 @@ ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
 # Expose port
 EXPOSE 8081
 
-# Run Java
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+# Use shell form ENTRYPOINT so variables expand at runtime
+# 'exec' replaces the shell with java, making PID 1 the JVM
+ENTRYPOINT ["/bin/sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
