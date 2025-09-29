@@ -1,28 +1,17 @@
-# Use a lightweight OpenJDK 11 image
+# Use lightweight OpenJDK 11
 FROM eclipse-temurin:11-jre-alpine
 
 WORKDIR /app
 
-# Install procps/bash for debugging if needed
-RUN apk add --no-cache procps curl unzip bash
+RUN apk add --no-cache procps bash curl unzip
 
-# Copy fat jar
 COPY snippy-note-services-service-1.0.0-SNAPSHOT.jar app.jar
 
-# JVM tuning variables
-ENV JVM_XMS=100m
-ENV JVM_XMX=200m
-ENV RESERVED_CODE_CACHE=150m
-ENV STACK_SIZE=512k
-
-# Compose JAVA_OPTS
+# Compose JAVA_OPTS from environment variables (set via Railway UI)
 ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
  -XX:ReservedCodeCacheSize=${RESERVED_CODE_CACHE} \
- -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=50"
+ -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=70"
 
-# Expose port
 EXPOSE 8081
 
-# Use shell form ENTRYPOINT so variables expand at runtime
-# 'exec' replaces the shell with java, making PID 1 the JVM
-ENTRYPOINT ["/bin/sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
