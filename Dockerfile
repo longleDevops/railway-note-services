@@ -10,8 +10,8 @@ RUN apk add --no-cache procps bash curl unzip
 COPY snippy-note-services-service-1.0.0-SNAPSHOT.jar app.jar
 
 # JVM tuning variables optimized for ~50 concurrent users
-ENV JVM_XMS=160m
-ENV JVM_XMX=160m
+ENV JVM_XMS=250m
+ENV JVM_XMX=250m
 ENV METASPACE=120m
 ENV RESERVED_CODE_CACHE=80m
 ENV STACK_SIZE=512k
