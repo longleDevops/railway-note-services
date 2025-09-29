@@ -1,5 +1,5 @@
 # Lightweight OpenJDK 11 Alpine image
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:11-jdk-alpine
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ ENV JVM_XMS=128m
 ENV JVM_XMX=160m
 ENV METASPACE=128m
 ENV RESERVED_CODE_CACHE=80m
-ENV STACK_SIZE=512k
+ENV STACK_SIZE=412k
 ENV GC_THREADS=4
 ENV CI_COMPILER=4
 
@@ -27,7 +27,7 @@ ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
  -XX:ConcGCThreads=${GC_THREADS} \
  -XX:G1ConcRefinementThreads=${GC_THREADS} \
  -XX:+UseG1GC \
- -XX:MaxGCPauseMillis=15 \
+ -XX:MaxGCPauseMillis=10 \
  -XX:+UseCompressedOops \
  -XX:+UseCompressedClassPointers \
  -XX:+TieredCompilation \
@@ -43,3 +43,5 @@ EXPOSE 8081
 
 # Run Java directly
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+
+#ps aux | grep java
