@@ -1,5 +1,5 @@
 # Use lightweight OpenJDK 11 with full JDK tools
-FROM eclipse-temurin:11-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
@@ -25,4 +25,4 @@ ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
  -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=${MAX_GC_PAUSE}"
 
 # Run Java directly with JAVA_OPTS
-ENTRYPOINT ["sh", "-c", "exec java -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
