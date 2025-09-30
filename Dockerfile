@@ -1,47 +1,28 @@
-# Lightweight OpenJDK 11 Alpine image
+# Use lightweight OpenJDK 11 with full JDK tools
 FROM eclipse-temurin:11-jdk-alpine
 
 WORKDIR /app
 
-# Install minimal utilities
+# Install procps, bash, curl, unzip for diagnostics
 RUN apk add --no-cache procps bash curl unzip
 
 # Copy fat jar
 COPY snippy-note-services-service-1.0.0-SNAPSHOT.jar app.jar
 
-# JVM tuning variables optimized for ~50 concurrent users
-ENV JVM_XMS=250m
-ENV JVM_XMX=250m
-ENV METASPACE=120m
-ENV RESERVED_CODE_CACHE=120m
-ENV STACK_SIZE=512k
-ENV GC_THREADS=10
-ENV CI_COMPILER=10
-
-# Compose JAVA_OPTS with performance enhancements
-ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
- -XX:MaxMetaspaceSize=${METASPACE} \
- -XX:ReservedCodeCacheSize=${RESERVED_CODE_CACHE} \
- -Xss${STACK_SIZE} \
- -XX:CICompilerCount=${CI_COMPILER} \
- -XX:ConcGCThreads=${GC_THREADS} \
- -XX:G1ConcRefinementThreads=${GC_THREADS} \
- -XX:MaxGCPauseMillis=15 \
- -XX:+UseCompressedOops \
- -XX:+UseCompressedClassPointers \
- -XX:+TieredCompilation \
- -XX:+AggressiveOpts \
- -XX:+AlwaysPreTouch \
- -XX:+OptimizeStringConcat \
- -XX:+UseStringDeduplication \
- -XX:+UnlockExperimentalVMOptions \
- -XX:+UseZGC \
- -XX:G1HeapRegionSize=1m"
-
-# Expose port
+# Expose app port
 EXPOSE 8081
 
-# Run Java directly
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+# JVM tuning environment variables (can override in Railway UI)
+ENV JVM_XMS=80m
+ENV JVM_XMX=100m
+ENV RESERVED_CODE_CACHE=130m
+ENV STACK_SIZE=300k
+ENV MAX_GC_PAUSE=20
 
-#ps aux | grep java
+# Compose all JVM options into a single environment variable
+ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
+ -XX:ReservedCodeCacheSize=${RESERVED_CODE_CACHE} \
+ -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=${MAX_GC_PAUSE}"
+
+# Run Java directly with JAVA_OPTS
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
