@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache procps bash curl unzip
 
 # Copy fat jar
-COPY snippy-note-services-service-1.0.0-SNAPSHOT.jar app.jar
+COPY snippy-note-services-service-1.0-runner.jar app.jar
 
 # Expose app port
 EXPOSE 8081
@@ -25,4 +25,4 @@ ENV JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX} \
  -Xss${STACK_SIZE} -XX:+UseG1GC -XX:MaxGCPauseMillis=${MAX_GC_PAUSE}"
 
 # Run Java directly with JAVA_OPTS
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java -jar app.jar"]
