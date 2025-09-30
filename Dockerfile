@@ -10,7 +10,7 @@ RUN apk add --no-cache procps bash curl unzip
 COPY snippy-note-services-service-1.0-runner.jar app.jar
 
 # Expose app port
-EXPOSE 8081
+EXPOSE 8080
 
 # JVM tuning environment variables (can override in Railway UI)
 ENV JVM_XMS=80m
