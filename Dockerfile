@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache procps bash curl unzip
 
 # Copy fat jar
-COPY snippy-note-services-service-1.0-runner.jar app.jar
+COPY snippy-note-services-service-1.0.0-SNAPSHOT-runner.jar app.jar
 
 # Expose app port
 EXPOSE 8080
